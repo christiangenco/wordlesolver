@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useImmer } from "use-immer";
 
-import useAnimation from "./useAnimation";
 import Header from "./Header";
 import Grid from "./Grid";
+import AddGuessForm from "./AddGuessForm";
 
 import words from "./words";
-import { filterPossibilities } from "./solver";
+import { filterPossibilities, solve } from "./solver";
 
 function App() {
-  const [guess, setGuess] = useState("");
   const [guessResults, updateGuessResults] = useImmer([
     [
       { letter: "s", included: false, position: false },
@@ -18,18 +17,20 @@ function App() {
       { letter: "a", included: true, position: true },
       { letter: "i", included: false, position: false },
     ],
-    [
-      { letter: "t", included: false, position: false },
-      { letter: "a", included: true, position: true },
-      { letter: "l", included: true, position: false },
-      { letter: "o", included: false, position: false },
-      { letter: "n", included: true, position: false },
-    ],
   ]);
 
-  const { animate, Animation } = useAnimation();
-
   const possibilities = filterPossibilities({ words, guessResults });
+
+  useEffect(async () => {
+    const bestGuesses = await solve({
+      guessResults,
+      words,
+      searchWords: true,
+      onProgress: ({ progress }) => {
+        console.log({ progress });
+      },
+    });
+  }, [guessResults]);
 
   return (
     <div className="dark:bg-gray-900 min-w-max min-h-screen">
@@ -40,30 +41,10 @@ function App() {
             guessResults={guessResults}
             updateGuessResults={updateGuessResults}
           />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setGuess("");
-            }}
-          >
-            <Animation>
-              <input
-                type="text"
-                className="uppercase font-bold text-3xl bg-gray-200 rounded px-2 py-1"
-                value={guess}
-                onChange={(e) => {
-                  const newGuess = e.target.value;
-                  if (newGuess.length > 5) {
-                    animate("headShake", 0.5);
-                  } else setGuess(e.target.value);
-                }}
-              />
-            </Animation>
-            <button type="submit">add guess</button>
-          </form>
+          <AddGuessForm words={words} updateGuessResults={updateGuessResults} />
           <pre className="dark:text-white">
             {possibilities.length}
-            {JSON.stringify({ guess, possibilities }, null, 2)}}
+            {JSON.stringify({ possibilities }, null, 2)}}
           </pre>
         </div>
       </div>

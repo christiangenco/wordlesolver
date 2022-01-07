@@ -36,7 +36,7 @@ function Box({ letter, included, position, updateGuessResults, row, col }) {
 
 function Row({ guessResult, updateGuessResults, row }) {
   return (
-    <div className="flex font-bold text-3xl">
+    <div className="flex font-bold text-3xl relative">
       {guessResult.map((resultLetter, i) => (
         <Box
           key={i}
@@ -46,6 +46,17 @@ function Row({ guessResult, updateGuessResults, row }) {
           updateGuessResults={updateGuessResults}
         />
       ))}
+      <button
+        className="absolute right-[-0.5em] text-gray-300 hover:text-gray-400 p-0 mt-3"
+        title="remove guess"
+        onClick={() => {
+          updateGuessResults((draft) => {
+            delete draft[row];
+          });
+        }}
+      >
+        &times;
+      </button>
     </div>
   );
 }
