@@ -84,13 +84,13 @@ function App() {
           <div className="flex justify-center items-center flex-col mt-4">
             <div className="w-80 h-[50vh] overflow-y-auto">
               <div className="relative">
-                <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 w-80 text-center">
+                <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400 w-80 text-center">
                   {pluralize(optimalGuesses.length, "optimal guess")}
                 </div>
                 {optimalGuesses.map(({ word, maxRemainingPossibilities }) => (
                   <button
                     key={word}
-                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 tracking-[0.5em]"
+                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 tracking-[0.5em]"
                     onClick={() => addGuess(word)}
                   >
                     {word}{" "}
@@ -100,13 +100,13 @@ function App() {
                   </button>
                 ))}
 
-                <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 w-80 text-center">
+                <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400 w-80 text-center">
                   {pluralize(possibilities.length, "possibility")}
                 </div>
                 {possibilities.map((possibility) => (
                   <button
                     key={possibility}
-                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 tracking-[0.5em]"
+                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 tracking-[0.5em]"
                     onClick={() => addGuess(possibility)}
                   >
                     {possibility}
