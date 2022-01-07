@@ -1,6 +1,5 @@
 // https://www.powerlanguage.co.uk/wordle/
-const fs = require("fs");
-const words = require("./words");
+// const words = require("./words");
 
 function evaluateGuess({ solution, guess }) {
   return [...guess].map((letter, index) => {
@@ -89,7 +88,7 @@ function solve({ guessResults, words, searchWords = true, onProgress }) {
 
       // for each word we could possibly guess...
       const potentialRemainingPossibilities = [];
-      for (possibility of possibilities) {
+      for (const possibility of possibilities) {
         // ...and each word the solution could be
         const guessResult = evaluateGuess({
           solution: possibility,
