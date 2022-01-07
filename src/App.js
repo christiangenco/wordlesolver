@@ -45,10 +45,10 @@ function App() {
 
   const possibilities = filterPossibilities({ words, guessResults });
 
-  useEffect(async () => {
+  useEffect(() => {
     setOptimalGuesses([]);
     if (possibilities?.length > 1) {
-      const optimalGuesses = await solve({
+      solve({
         guessResults,
         words,
         searchWords: true,
@@ -60,14 +60,15 @@ function App() {
         }) => {
           // console.log({ progress });
         },
+      }).then((optimalGuesses) => {
+        if (
+          optimalGuesses.length > 0 &&
+          optimalGuesses[0].maxRemainingPossibilities > 1
+        )
+          setOptimalGuesses(optimalGuesses);
       });
-      if (
-        optimalGuesses.length > 0 &&
-        optimalGuesses[0].maxRemainingPossibilities > 1
-      )
-        setOptimalGuesses(optimalGuesses);
     }
-  }, [guessResults]);
+  }, [guessResults, possibilities?.length]);
 
   return (
     <div className="dark:bg-gray-900 min-w-max min-h-screen">
