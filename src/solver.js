@@ -1,7 +1,7 @@
 // https://www.powerlanguage.co.uk/wordle/
 // const words = require("./words");
 
-function evaluateGuess({ solution, guess }) {
+export function evaluateGuess({ solution, guess }) {
   return [...guess].map((letter, index) => {
     return {
       letter,
@@ -10,9 +10,9 @@ function evaluateGuess({ solution, guess }) {
     };
   });
 }
-exports.evaluateGuess = evaluateGuess;
+// exports.evaluateGuess = evaluateGuess;
 
-function filterPossibilities({ words, guessResults }) {
+export function filterPossibilities({ words, guessResults }) {
   const includedLetters = [
     ...new Set(
       guessResults
@@ -62,9 +62,9 @@ function filterPossibilities({ words, guessResults }) {
     .filter((w) => includedLetters.every((l) => w.includes(l)))
     .filter((w) => !notIncluded.some((l) => w.includes(l)));
 }
-exports.filterPossibilities = filterPossibilities;
+// exports.filterPossibilities = filterPossibilities;
 
-function solve({ guessResults, words, searchWords = true, onProgress }) {
+export function solve({ guessResults, words, searchWords = true, onProgress }) {
   return new Promise((resolve, reject) => {
     const possibilities = filterPossibilities({ guessResults, words });
 
@@ -135,7 +135,7 @@ function solve({ guessResults, words, searchWords = true, onProgress }) {
     // console.log(orderedGuesses[0]);
   });
 }
-exports.solve = solve;
+// exports.solve = solve;
 
 // const guessResults = [
 //   [
