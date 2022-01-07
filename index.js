@@ -65,75 +65,108 @@ function filterPossibilities({ words, guessResults }) {
 }
 exports.filterPossibilities = filterPossibilities;
 
-const guessResults = [
-  // [
-  //   { letter: "p", included: false, position: false },
-  //   { letter: "e", included: false, position: false },
-  //   { letter: "a", included: true, position: false },
-  //   { letter: "c", included: false, position: false },
-  //   { letter: "h", included: false, position: false },
-  // ],
-  // [
-  //   { letter: "f", included: false, position: false },
-  //   { letter: "r", included: false, position: false },
-  //   { letter: "i", included: false, position: false },
-  //   { letter: "t", included: false, position: false },
-  //   { letter: "s", included: false, position: false },
-  // ],
-  // [
-  //   { letter: "b", included: true, position: true },
-  //   { letter: "o", included: false, position: false },
-  //   { letter: "u", included: false, position: false },
-  //   { letter: "n", included: true, position: false },
-  //   { letter: "d", included: false, position: false },
-  // ],
-];
+function solve({ guessResults, words, searchWords = true, onProgress }) {
+  return new Promise((resolve, reject) => {
+    const possibilities = filterPossibilities({ guessResults, words });
 
-const possibilities = filterPossibilities({ guessResults, words });
-console.log({ possibilities });
+    // score best possible guesses
+    let minMaxRemainingPossibilities = words.length;
+    let minMaxWord = "";
+    // const guesses = possibilities.map((word) => {
+    const guesses = [];
 
-// score best possible guesses
-// map words instead of possibilities for a longer but more rigorous search
-let minMaxRemainingPossibilities = words.length;
-// const guesses = possibilities.map((word) => {
-const guesses = [];
-for (word of possibilities) {
-  console.log({ word, minMaxRemainingPossibilities });
+    // search words instead of possibilities for a longer but more rigorous search
+    const searchArray = searchWords ? words : possibilities;
+    for (let i = 0; i < searchArray.length; i++) {
+      const word = searchArray[i];
+      // console.log({ word, minMaxRemainingPossibilities });
+      onProgress({
+        percent: i / searchArray.length,
+        word,
+        minMaxWord,
+        minMaxRemainingPossibilities,
+      });
 
-  // for each word we could possibly guess...
-  const potentialRemainingPossibilities = [];
-  for (possibility of possibilities) {
-    // ...and each word the solution could be
-    const guessResult = evaluateGuess({ solution: possibility, guess: word });
-    // how much information would this guess give us if we guessed it?
-    // ie: how many possibilities would be left?
-    const newPossibilities = filterPossibilities({
-      guessResults: [...guessResults, guessResult],
-      words: possibilities,
-    });
-    potentialRemainingPossibilities.push(newPossibilities.length);
-    if (newPossibilities.length > minMaxRemainingPossibilities) break;
-  }
+      // for each word we could possibly guess...
+      const potentialRemainingPossibilities = [];
+      for (possibility of possibilities) {
+        // ...and each word the solution could be
+        const guessResult = evaluateGuess({
+          solution: possibility,
+          guess: word,
+        });
+        // how much information would this guess give us if we guessed it?
+        // ie: how many possibilities would be left?
+        const newPossibilities = filterPossibilities({
+          guessResults: [...guessResults, guessResult],
+          words: possibilities,
+        });
+        potentialRemainingPossibilities.push(newPossibilities.length);
 
-  // if (potentialRemainingPossibilities.length > 0) {
-  const maxRemainingPossibilities = Math.max(
-    ...potentialRemainingPossibilities
-  );
-  minMaxRemainingPossibilities = Math.min(
-    minMaxRemainingPossibilities,
-    maxRemainingPossibilities
-  );
-  console.log({ maxRemainingPossibilities, minMaxRemainingPossibilities });
-  guesses.push({
-    word,
-    potentialRemainingPossibilities,
-    maxRemainingPossibilities,
+        // give up early to save time if we already know we won't win the minimax game
+        if (newPossibilities.length > minMaxRemainingPossibilities) break;
+      }
+
+      // if (potentialRemainingPossibilities.length > 0) {
+      const maxRemainingPossibilities = Math.max(
+        ...potentialRemainingPossibilities
+      );
+      if (maxRemainingPossibilities <= minMaxRemainingPossibilities) {
+        minMaxWord = word;
+        minMaxRemainingPossibilities = maxRemainingPossibilities;
+      }
+      // console.log({ maxRemainingPossibilities, minMaxRemainingPossibilities });
+      guesses.push({
+        word,
+        potentialRemainingPossibilities,
+        maxRemainingPossibilities,
+      });
+      // }
+    }
+
+    // pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
+    const orderedGuesses = guesses.sort(
+      (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
+    );
+    resolve(orderedGuesses);
+    // console.log(orderedGuesses[0]);
   });
-  // }
 }
+exports.solve = solve;
 
-// pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
-const orderedGuesses = guesses.sort(
-  (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
-);
-console.log(orderedGuesses[0]);
+// const guessResults = [
+//   [
+//     { letter: "s", included: false, position: false },
+//     { letter: "e", included: false, position: false },
+//     { letter: "r", included: false, position: false },
+//     { letter: "a", included: true, position: true },
+//     { letter: "i", included: false, position: false },
+//   ],
+//   [
+//     { letter: "t", included: false, position: false },
+//     { letter: "a", included: true, position: true },
+//     { letter: "l", included: true, position: false },
+//     { letter: "o", included: false, position: false },
+//     { letter: "n", included: true, position: false },
+//   ],
+// ];
+
+// async function main() {
+//   const results = await solve({
+//     guessResults,
+//     words,
+//     searchWords: true,
+//     onProgress: ({
+//       percent,
+//       word,
+//       minMaxWord,
+//       minMaxRemainingPossibilities,
+//     }) => {
+//       console.log({ percent, word, minMaxWord, minMaxRemainingPossibilities });
+//     },
+//   });
+
+//   console.log({ results });
+// }
+
+// main();
