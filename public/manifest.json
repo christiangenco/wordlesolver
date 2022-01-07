@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Wordle Solver",
+  "name": "Solver for Wordle daily word game by Christian Genco",
   "icons": [
     {
       "src": "favicon.ico",
