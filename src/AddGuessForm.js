@@ -2,22 +2,14 @@ import { useState } from "react";
 
 import Animation from "./Animation";
 
-export default function AddGuessForm({ updateGuessResults, words }) {
+export default function AddGuessForm({ addGuess, words }) {
   const [guess, setGuess] = useState("");
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
         if (words.includes(guess)) {
-          updateGuessResults((draft) => {
-            draft.push(
-              [...guess].map((letter) => ({
-                letter,
-                included: false,
-                position: false,
-              }))
-            );
-          });
+          addGuess(guess);
           setGuess("");
         } else {
           alert(`"${guess}" isn't a word, according to Wordle`);
@@ -46,7 +38,7 @@ export default function AddGuessForm({ updateGuessResults, words }) {
 
       <button
         type="submit"
-        className="mt-1 w-80 bg-green-500 text-green-100 text-center mx-auto rounded px-2 py-1 text-xl"
+        className="mt-1 w-80 bg-green-500 hover:bg-green-600 text-green-100 text-center mx-auto rounded px-2 py-1 text-xl"
       >
         add guess
       </button>

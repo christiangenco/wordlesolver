@@ -124,10 +124,14 @@ function solve({ guessResults, words, searchWords = true, onProgress }) {
     }
 
     // pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
-    const orderedGuesses = guesses.sort(
-      (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
+    const optimalGuesses = guesses.filter(
+      (guess) => guess.maxRemainingPossibilities <= minMaxRemainingPossibilities
     );
-    resolve(orderedGuesses);
+    resolve(optimalGuesses);
+    // const orderedGuesses = guesses.sort(
+    //   (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
+    // );
+    // resolve(orderedGuesses);
     // console.log(orderedGuesses[0]);
   });
 }

@@ -8,28 +8,65 @@ import AddGuessForm from "./AddGuessForm";
 import words from "./words";
 import { filterPossibilities, solve } from "./solver";
 
+function pluralize(n, word) {
+  const plurals = {
+    guess: "guesses",
+    "optimal guess": "optimal guesses",
+    possibility: "possibilities",
+  };
+  if (n === 1) return `${n} ${word}`;
+  else return `${n} ${plurals[word]}`;
+}
+
 function App() {
+  const [optimalGuesses, setOptimalGuesses] = useState([]);
+
   const [guessResults, updateGuessResults] = useImmer([
     [
-      { letter: "s", included: false, position: false },
+      { letter: "s", included: true, position: true },
       { letter: "e", included: false, position: false },
       { letter: "r", included: false, position: false },
-      { letter: "a", included: true, position: true },
+      { letter: "a", included: false, position: false },
       { letter: "i", included: false, position: false },
     ],
   ]);
 
+  function addGuess(guess) {
+    updateGuessResults((draft) => {
+      draft.push(
+        [...guess].map((letter) => ({
+          letter,
+          included: false,
+          position: false,
+        }))
+      );
+    });
+  }
+
   const possibilities = filterPossibilities({ words, guessResults });
 
   useEffect(async () => {
-    const bestGuesses = await solve({
-      guessResults,
-      words,
-      searchWords: true,
-      onProgress: ({ progress }) => {
-        console.log({ progress });
-      },
-    });
+    setOptimalGuesses([]);
+    if (possibilities?.length > 1) {
+      const optimalGuesses = await solve({
+        guessResults,
+        words,
+        searchWords: true,
+        onProgress: ({
+          percent,
+          word,
+          minMaxWord,
+          minMaxRemainingPossibilities,
+        }) => {
+          // console.log({ progress });
+        },
+      });
+      if (
+        optimalGuesses.length > 0 &&
+        optimalGuesses[0].maxRemainingPossibilities > 1
+      )
+        setOptimalGuesses(optimalGuesses);
+    }
   }, [guessResults]);
 
   return (
@@ -41,11 +78,42 @@ function App() {
             guessResults={guessResults}
             updateGuessResults={updateGuessResults}
           />
-          <AddGuessForm words={words} updateGuessResults={updateGuessResults} />
-          <pre className="dark:text-white">
-            {possibilities.length}
-            {JSON.stringify({ possibilities }, null, 2)}}
-          </pre>
+          <AddGuessForm words={words} addGuess={addGuess} />
+
+          <div className="flex justify-center items-center flex-col mt-4">
+            <div className="w-80 h-[50vh] overflow-y-auto">
+              <div className="relative">
+                <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 w-80 text-center">
+                  {pluralize(optimalGuesses.length, "optimal guess")}
+                </div>
+                {optimalGuesses.map(({ word, maxRemainingPossibilities }) => (
+                  <button
+                    key={word}
+                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 tracking-[0.5em]"
+                    onClick={() => addGuess(word)}
+                  >
+                    {word}{" "}
+                    <span className="tracking-normal text-sm absolute text-gray-500">
+                      {maxRemainingPossibilities}
+                    </span>
+                  </button>
+                ))}
+
+                <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 w-80 text-center">
+                  {pluralize(possibilities.length, "possibility")}
+                </div>
+                {possibilities.map((possibility) => (
+                  <button
+                    key={possibility}
+                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 tracking-[0.5em]"
+                    onClick={() => addGuess(possibility)}
+                  >
+                    {possibility}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
