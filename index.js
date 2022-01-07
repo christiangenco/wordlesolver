@@ -65,22 +65,75 @@ function filterPossibilities({ words, guessResults }) {
 }
 exports.filterPossibilities = filterPossibilities;
 
-// TODO: score best possible guesses
-// const guesses = words.map((word) => {
-//   // for each word we could possibly guess...
-//   possibleWords.map((possibility) => {
-//     // ...and each word the solution could be
-//     // how much information would this guess give us?
-//     // ie: how many possibilities would this guess rule out?
-//   });
-// });
+const guessResults = [
+  // [
+  //   { letter: "p", included: false, position: false },
+  //   { letter: "e", included: false, position: false },
+  //   { letter: "a", included: true, position: false },
+  //   { letter: "c", included: false, position: false },
+  //   { letter: "h", included: false, position: false },
+  // ],
+  // [
+  //   { letter: "f", included: false, position: false },
+  //   { letter: "r", included: false, position: false },
+  //   { letter: "i", included: false, position: false },
+  //   { letter: "t", included: false, position: false },
+  //   { letter: "s", included: false, position: false },
+  // ],
+  // [
+  //   { letter: "b", included: true, position: true },
+  //   { letter: "o", included: false, position: false },
+  //   { letter: "u", included: false, position: false },
+  //   { letter: "n", included: true, position: false },
+  //   { letter: "d", included: false, position: false },
+  // ],
+];
 
-// // pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
+const possibilities = filterPossibilities({ guessResults, words });
+console.log({ possibilities });
 
-// console.log(possibleWords);
+// score best possible guesses
+// map words instead of possibilities for a longer but more rigorous search
+let minMaxRemainingPossibilities = words.length;
+// const guesses = possibilities.map((word) => {
+const guesses = [];
+for (word of possibilities) {
+  console.log({ word, minMaxRemainingPossibilities });
 
-// // const words = fs
-// //   .readFileSync("words_alpha.txt", { encoding: "utf8" })
-// //   .split("\n")
-// //   .map((w) => w.trim().toLowerCase())
-// //   .filter((w) => w.length === 5);
+  // for each word we could possibly guess...
+  const potentialRemainingPossibilities = [];
+  for (possibility of possibilities) {
+    // ...and each word the solution could be
+    const guessResult = evaluateGuess({ solution: possibility, guess: word });
+    // how much information would this guess give us if we guessed it?
+    // ie: how many possibilities would be left?
+    const newPossibilities = filterPossibilities({
+      guessResults: [...guessResults, guessResult],
+      words: possibilities,
+    });
+    potentialRemainingPossibilities.push(newPossibilities.length);
+    if (newPossibilities.length > minMaxRemainingPossibilities) break;
+  }
+
+  // if (potentialRemainingPossibilities.length > 0) {
+  const maxRemainingPossibilities = Math.max(
+    ...potentialRemainingPossibilities
+  );
+  minMaxRemainingPossibilities = Math.min(
+    minMaxRemainingPossibilities,
+    maxRemainingPossibilities
+  );
+  console.log({ maxRemainingPossibilities, minMaxRemainingPossibilities });
+  guesses.push({
+    word,
+    potentialRemainingPossibilities,
+    maxRemainingPossibilities,
+  });
+  // }
+}
+
+// pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
+const orderedGuesses = guesses.sort(
+  (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
+);
+console.log(orderedGuesses[0]);
