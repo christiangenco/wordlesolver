@@ -51,7 +51,7 @@ function App() {
   });
 
   useEffect(() => {
-    if (!optimalGuesses.length === 0) setOptimalGuesses([]);
+    if (optimalGuesses.length > 0) setOptimalGuesses([]);
     // recompute possibilities in the hook to avoid complicated infinite loop triggering logic
     const possibilities = filterPossibilities({
       words: solutions,
@@ -81,11 +81,12 @@ function App() {
         if (
           optimalGuesses.length > 0 &&
           optimalGuesses[0].maxRemainingPossibilities > 1
-        )
+        ) {
           setOptimalGuesses(optimalGuesses);
+        }
       });
     }
-  }, [guessResults]);
+  }, [guessResults, optimalGuesses.length]);
 
   return (
     <div className="dark:bg-gray-900 min-w-max min-h-screen">
