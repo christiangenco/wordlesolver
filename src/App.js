@@ -22,6 +22,7 @@ function pluralize(n, word) {
 
 function App() {
   const [optimalGuesses, setOptimalGuesses] = useState([]);
+  const [optimalGuessesLoading, setOptimalGuessesLoading] = useState(false);
 
   const [guessResults, updateGuessResults] = useImmer([
     // [
@@ -51,7 +52,7 @@ function App() {
   });
 
   useEffect(() => {
-    if (optimalGuesses.length > 0) setOptimalGuesses([]);
+    setOptimalGuessesLoading(true);
     // recompute possibilities in the hook to avoid complicated infinite loop triggering logic
     const possibilities = filterPossibilities({
       words: solutions,
@@ -61,6 +62,7 @@ function App() {
       // use precomputed first guesses to save initial loading time
       if (guessResults?.length === 0) {
         setOptimalGuesses(optimalFirstGuesses);
+        setOptimalGuessesLoading(false);
         return;
       }
 
@@ -82,9 +84,14 @@ function App() {
           optimalGuesses.length > 0 &&
           optimalGuesses[0].maxRemainingPossibilities > 1
         ) {
+          console.log("setting optimalGuesses");
+          setOptimalGuessesLoading(false);
           setOptimalGuesses(optimalGuesses);
         }
       });
+    } else {
+      setOptimalGuessesLoading(false);
+      setOptimalGuesses([]);
     }
   }, [guessResults, optimalGuesses.length]);
 
@@ -103,20 +110,23 @@ function App() {
             <div className="w-80 h-[50vh] overflow-y-auto">
               <div className="relative">
                 <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400 w-80 text-center">
-                  {pluralize(optimalGuesses.length, "optimal guess")}
+                  {!optimalGuessesLoading &&
+                    pluralize(optimalGuesses.length, "optimal guess")}
+                  {optimalGuessesLoading && "computing optimal guesses..."}
                 </div>
-                {optimalGuesses.map(({ word, maxRemainingPossibilities }) => (
-                  <button
-                    key={word}
-                    className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 tracking-[0.5em]"
-                    onClick={() => addGuess(word)}
-                  >
-                    {word}{" "}
-                    <span className="tracking-normal text-sm absolute text-gray-500">
-                      {maxRemainingPossibilities}
-                    </span>
-                  </button>
-                ))}
+                {!optimalGuessesLoading &&
+                  optimalGuesses.map(({ word, maxRemainingPossibilities }) => (
+                    <button
+                      key={word}
+                      className="px-3 py-3 w-80 text-3xl font-mono uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 tracking-[0.5em]"
+                      onClick={() => addGuess(word)}
+                    >
+                      {word}{" "}
+                      <span className="tracking-normal text-sm absolute text-gray-500">
+                        {maxRemainingPossibilities}
+                      </span>
+                    </button>
+                  ))}
 
                 <div className="z-10 sticky top-0 bg-white border-b border-gray-200 py-1 text-sm font-medium text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400 w-80 text-center">
                   {pluralize(possibilities.length, "possibility")}
