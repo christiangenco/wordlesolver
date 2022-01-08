@@ -79,7 +79,7 @@ function App() {
           setOptimalGuesses(optimalGuesses);
       });
     }
-  }, [guessResults, possibilities?.length]);
+  }, [guessResults, possibilities]);
 
   return (
     <div className="dark:bg-gray-900 min-w-max min-h-screen">
