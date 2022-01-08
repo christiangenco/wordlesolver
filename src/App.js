@@ -51,8 +51,14 @@ function App() {
   });
 
   useEffect(() => {
-    setOptimalGuesses([]);
+    if (!optimalGuesses.length === 0) setOptimalGuesses([]);
+    // recompute possibilities in the hook to avoid complicated infinite loop triggering logic
+    const possibilities = filterPossibilities({
+      words: solutions,
+      guessResults,
+    });
     if (possibilities?.length > 1) {
+      // use precomputed first guesses to save initial loading time
       if (guessResults?.length === 0) {
         setOptimalGuesses(optimalFirstGuesses);
         return;
@@ -79,7 +85,7 @@ function App() {
           setOptimalGuesses(optimalGuesses);
       });
     }
-  }, [guessResults, possibilities]);
+  }, [guessResults]);
 
   return (
     <div className="dark:bg-gray-900 min-w-max min-h-screen">

@@ -1,8 +1,8 @@
 function Box({ letter, included, position, updateGuessResults, row, col }) {
-  let colors = "bg-gray-500 hover:bg-gray-600 text-white";
+  let colors = "bg-gray-500 hover:bg-gray-400 text-white";
   if (included)
-    if (position) colors = "bg-green-600 hover:bg-green-700 text-white";
-    else colors = "bg-yellow-500 hover:bg-yellow-600 text-white";
+    if (position) colors = "bg-green-600 hover:bg-green-500 text-white";
+    else colors = "bg-yellow-500 hover:bg-yellow-400 text-white";
 
   if (!letter) colors = "border";
 

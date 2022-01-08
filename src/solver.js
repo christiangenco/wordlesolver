@@ -73,6 +73,7 @@ export function solve({
   searchWords = true,
   onProgress,
 }) {
+  console.log("solving...");
   return new Promise((resolve, reject) => {
     // const possibilities = filterPossibilities({ guessResults, words });
 
