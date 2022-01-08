@@ -13,6 +13,8 @@ export function evaluateGuess({ solution, guess }) {
 // exports.evaluateGuess = evaluateGuess;
 
 export function filterPossibilities({ words, guessResults }) {
+  if (guessResults.length === 0) return words;
+
   const includedLetters = [
     ...new Set(
       guessResults
@@ -64,9 +66,15 @@ export function filterPossibilities({ words, guessResults }) {
 }
 // exports.filterPossibilities = filterPossibilities;
 
-export function solve({ guessResults, words, searchWords = true, onProgress }) {
+export function solve({
+  guessResults,
+  words,
+  possibilities,
+  searchWords = true,
+  onProgress,
+}) {
   return new Promise((resolve, reject) => {
-    const possibilities = filterPossibilities({ guessResults, words });
+    // const possibilities = filterPossibilities({ guessResults, words });
 
     // score best possible guesses
     let minMaxRemainingPossibilities = words.length;

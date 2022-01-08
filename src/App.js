@@ -6,7 +6,9 @@ import Grid from "./Grid";
 import AddGuessForm from "./AddGuessForm";
 
 import words from "./words";
+import solutions from "./solutions";
 import { filterPossibilities, solve } from "./solver";
+import optimalFirstGuesses from "./optimalFirstGuesses";
 
 function pluralize(n, word) {
   const plurals = {
@@ -22,13 +24,13 @@ function App() {
   const [optimalGuesses, setOptimalGuesses] = useState([]);
 
   const [guessResults, updateGuessResults] = useImmer([
-    [
-      { letter: "s", included: true, position: true },
-      { letter: "e", included: false, position: false },
-      { letter: "r", included: false, position: false },
-      { letter: "a", included: false, position: false },
-      { letter: "i", included: false, position: false },
-    ],
+    // [
+    //   { letter: "s", included: true, position: true },
+    //   { letter: "e", included: false, position: false },
+    //   { letter: "r", included: false, position: false },
+    //   { letter: "a", included: false, position: false },
+    //   { letter: "i", included: false, position: false },
+    // ],
   ]);
 
   function addGuess(guess) {
@@ -43,14 +45,23 @@ function App() {
     });
   }
 
-  const possibilities = filterPossibilities({ words, guessResults });
+  const possibilities = filterPossibilities({
+    words: solutions,
+    guessResults,
+  });
 
   useEffect(() => {
     setOptimalGuesses([]);
     if (possibilities?.length > 1) {
+      if (guessResults?.length === 0) {
+        setOptimalGuesses(optimalFirstGuesses);
+        return;
+      }
+
       solve({
         guessResults,
         words,
+        possibilities,
         searchWords: true,
         onProgress: ({
           percent,

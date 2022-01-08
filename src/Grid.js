@@ -51,7 +51,8 @@ function Row({ guessResult, updateGuessResults, row }) {
         title="remove guess"
         onClick={() => {
           updateGuessResults((draft) => {
-            delete draft[row];
+            // delete at index `row`
+            draft.splice(row, 1);
           });
         }}
       >
