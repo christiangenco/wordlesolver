@@ -4,6 +4,7 @@ export default function Header() {
       <a
         href="https://twitter.com/cgenco/status/1479144204043444226"
         target="_blank"
+        rel="noreferrer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
