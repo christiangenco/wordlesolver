@@ -23,6 +23,7 @@ export default function AddGuessForm({ addGuess, words }) {
           return (
             <input
               type="text"
+              placeholder="GUESS"
               className="uppercase font-bold text-3xl bg-gray-200 rounded px-2 py-1 mx-auto w-80 tracking-[0.5em]"
               value={guess}
               onChange={(e) => {
