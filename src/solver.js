@@ -74,75 +74,75 @@ export function solve({
   onProgress,
 }) {
   console.log("solving...");
-  return new Promise((resolve, reject) => {
-    // const possibilities = filterPossibilities({ guessResults, words });
+  // return new Promise((resolve, reject) => {
+  // const possibilities = filterPossibilities({ guessResults, words });
 
-    // score best possible guesses
-    let minMaxRemainingPossibilities = words.length;
-    let minMaxWord = "";
-    // const guesses = possibilities.map((word) => {
-    const guesses = [];
+  // score best possible guesses
+  let minMaxRemainingPossibilities = words.length;
+  let minMaxWord = "";
+  // const guesses = possibilities.map((word) => {
+  const guesses = [];
 
-    // search words instead of possibilities for a longer but more rigorous search
-    const searchArray = searchWords ? words : possibilities;
-    for (let i = 0; i < searchArray.length; i++) {
-      const word = searchArray[i];
-      // console.log({ word, minMaxRemainingPossibilities });
-      onProgress({
-        percent: i / searchArray.length,
-        word,
-        minMaxWord,
-        minMaxRemainingPossibilities,
+  // search words instead of possibilities for a longer but more rigorous search
+  const searchArray = searchWords ? words : possibilities;
+  for (let i = 0; i < searchArray.length; i++) {
+    const word = searchArray[i];
+    // console.log({ word, minMaxRemainingPossibilities });
+    onProgress({
+      percent: i / searchArray.length,
+      word,
+      minMaxWord,
+      minMaxRemainingPossibilities,
+    });
+
+    // for each word we could possibly guess...
+    const potentialRemainingPossibilities = [];
+    for (const possibility of possibilities) {
+      // ...and each word the solution could be
+      const guessResult = evaluateGuess({
+        solution: possibility,
+        guess: word,
       });
-
-      // for each word we could possibly guess...
-      const potentialRemainingPossibilities = [];
-      for (const possibility of possibilities) {
-        // ...and each word the solution could be
-        const guessResult = evaluateGuess({
-          solution: possibility,
-          guess: word,
-        });
-        // how much information would this guess give us if we guessed it?
-        // ie: how many possibilities would be left?
-        const newPossibilities = filterPossibilities({
-          guessResults: [...guessResults, guessResult],
-          words: possibilities,
-        });
-        potentialRemainingPossibilities.push(newPossibilities.length);
-
-        // give up early to save time if we already know we won't win the minimax game
-        if (newPossibilities.length > minMaxRemainingPossibilities) break;
-      }
-
-      // if (potentialRemainingPossibilities.length > 0) {
-      const maxRemainingPossibilities = Math.max(
-        ...potentialRemainingPossibilities
-      );
-      if (maxRemainingPossibilities <= minMaxRemainingPossibilities) {
-        minMaxWord = word;
-        minMaxRemainingPossibilities = maxRemainingPossibilities;
-      }
-      // console.log({ maxRemainingPossibilities, minMaxRemainingPossibilities });
-      guesses.push({
-        word,
-        potentialRemainingPossibilities,
-        maxRemainingPossibilities,
+      // how much information would this guess give us if we guessed it?
+      // ie: how many possibilities would be left?
+      const newPossibilities = filterPossibilities({
+        guessResults: [...guessResults, guessResult],
+        words: possibilities,
       });
-      // }
+      potentialRemainingPossibilities.push(newPossibilities.length);
+
+      // give up early to save time if we already know we won't win the minimax game
+      if (newPossibilities.length > minMaxRemainingPossibilities) break;
     }
 
-    // pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
-    const optimalGuesses = guesses.filter(
-      (guess) => guess.maxRemainingPossibilities <= minMaxRemainingPossibilities
+    // if (potentialRemainingPossibilities.length > 0) {
+    const maxRemainingPossibilities = Math.max(
+      ...potentialRemainingPossibilities
     );
-    resolve(optimalGuesses);
-    // const orderedGuesses = guesses.sort(
-    //   (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
-    // );
-    // resolve(orderedGuesses);
-    // console.log(orderedGuesses[0]);
-  });
+    if (maxRemainingPossibilities <= minMaxRemainingPossibilities) {
+      minMaxWord = word;
+      minMaxRemainingPossibilities = maxRemainingPossibilities;
+    }
+    // console.log({ maxRemainingPossibilities, minMaxRemainingPossibilities });
+    guesses.push({
+      word,
+      // potentialRemainingPossibilities,
+      maxRemainingPossibilities,
+    });
+    // }
+  }
+
+  // pick the guess that "minimizes the maximum number of remaining possibilities" (Knuth)
+  const optimalGuesses = guesses.filter(
+    (guess) => guess.maxRemainingPossibilities <= minMaxRemainingPossibilities
+  );
+  return optimalGuesses;
+  // const orderedGuesses = guesses.sort(
+  //   (a, b) => a.maxRemainingPossibilities - b.maxRemainingPossibilities
+  // );
+  // resolve(orderedGuesses);
+  // console.log(orderedGuesses[0]);
+  // });
 }
 // exports.solve = solve;
 

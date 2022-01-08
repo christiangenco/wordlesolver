@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useImmer } from "use-immer";
+import memoize from "lodash.memoize";
 
 import Header from "./Header";
 import Grid from "./Grid";
@@ -9,6 +10,14 @@ import words from "./words";
 import solutions from "./solutions";
 import { filterPossibilities, solve } from "./solver";
 import optimalFirstGuesses from "./optimalFirstGuesses";
+
+const memoizedSolve = memoize(
+  solve,
+  ({ guessResults, words, possibilities, searchWords, onProgress }) => {
+    // cache key
+    return JSON.stringify({ guessResults });
+  }
+);
 
 function pluralize(n, word) {
   const plurals = {
@@ -66,7 +75,8 @@ function App() {
         return;
       }
 
-      solve({
+      // this can take a while
+      const optimalGuesses = memoizedSolve({
         guessResults,
         words,
         possibilities,
@@ -79,20 +89,20 @@ function App() {
         }) => {
           // console.log({ progress });
         },
-      }).then((optimalGuesses) => {
-        if (
-          optimalGuesses.length > 0 &&
-          optimalGuesses[0].maxRemainingPossibilities > 1
-        ) {
-          console.log("setting optimalGuesses");
-          setOptimalGuessesLoading(false);
-          setOptimalGuesses(optimalGuesses);
-        }
       });
-    } else {
-      setOptimalGuessesLoading(false);
-      setOptimalGuesses([]);
+      console.log({ optimalGuesses });
+      if (
+        optimalGuesses.length > 0 &&
+        optimalGuesses[0].maxRemainingPossibilities > 1
+      ) {
+        console.log("setting optimalGuesses");
+        setOptimalGuessesLoading(false);
+        setOptimalGuesses(optimalGuesses);
+        return;
+      }
     }
+    setOptimalGuessesLoading(false);
+    setOptimalGuesses([]);
   }, [guessResults, optimalGuesses.length]);
 
   return (
