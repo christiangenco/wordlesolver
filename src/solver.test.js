@@ -1,4 +1,4 @@
-const { evaluateGuess, filterPossibilities } = require("./index");
+const { evaluateGuess, filterPossibilities } = require("./solver");
 
 test("evaluateGuess correctly matches word", () => {
   expect(evaluateGuess({ solution: "beans", guess: "beans" })).toEqual([
@@ -60,4 +60,29 @@ test("filterPossibilities returns words with matched letter positions", () => {
     ],
   ];
   expect(filterPossibilities({ words, guessResults })).toEqual(["aaabb"]);
+});
+
+test("filterPossibilities handles double letter guesses the same way Wordle does", () => {
+  const words = ["knoll", "aaaaa"];
+  let guessResults = [
+    [
+      { letter: "n", included: true, position: false },
+      { letter: "y", included: false, position: false },
+      { letter: "l", included: true, position: false },
+      { letter: "o", included: true, position: false },
+      { letter: "n", included: false, position: false },
+    ],
+  ];
+  expect(filterPossibilities({ words, guessResults })).toEqual(["knoll"]);
+
+  guessResults = [
+    [
+      { letter: "w", included: false, position: false },
+      { letter: "o", included: false, position: false },
+      { letter: "o", included: true, position: true },
+      { letter: "l", included: true, position: true },
+      { letter: "y", included: false, position: false },
+    ],
+  ];
+  expect(filterPossibilities({ words, guessResults })).toEqual(["knoll"]);
 });

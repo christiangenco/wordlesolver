@@ -28,7 +28,7 @@ export function filterPossibilities({ words, guessResults }) {
     ...new Set(
       guessResults
         .flat()
-        .filter((l) => !l.included)
+        .filter((l) => !l.included && !includedLetters.includes(l.letter))
         .map((l) => l.letter)
     ),
   ];
