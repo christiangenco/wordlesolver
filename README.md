@@ -7,3 +7,5 @@ Check out [how it was made in a series of tweets](https://twitter.com/cgenco/sta
 If you're just looking for the meat and potatoes of how the optimal best guesses get chosen check out [solver.js](https://github.com/christiangenco/wordlesolver/blob/main/src/solver.js).
 
 For a more academic approach to solving this sort of problem, check out Donald Knuth's paper [The Computer As Mastermind](https://www.cs.uni.edu/~wallingf/teaching/cs3530/resources/knuth-mastermind.pdf) which is about a similar algorithm for solving a similar game.
+
+WordleSolver.com doesn't use the optimal solving strategy. For more on those, check out [Wordle-solving state of the art](https://www.poirrier.ca/notes/wordle-optimal/) which use [wordle decision trees like this](http://sonorouschocolate.com/notes/images/c/c4/Optimaltree.normalmode.txt).
