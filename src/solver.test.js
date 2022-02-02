@@ -86,3 +86,20 @@ test("filterPossibilities handles double letter guesses the same way Wordle does
   ];
   expect(filterPossibilities({ words, guessResults })).toEqual(["knoll"]);
 });
+
+test("filterPossibilities treats * as * and not regex", () => {
+  const words = ["2-1*8=-6", "6-8*1=-2", "10*1-8=2"];
+  const guessResults = [
+    [
+      { letter: "4", included: false, position: false },
+      { letter: "2", included: true, position: false },
+      { letter: "*", included: true, position: true },
+      { letter: "9", included: false, position: false },
+      { letter: "=", included: true, position: false },
+      { letter: "3", included: false, position: false },
+      { letter: "7", included: false, position: false },
+      { letter: "8", included: true, position: false },
+    ],
+  ];
+  expect(filterPossibilities({ words, guessResults })).toEqual(["10*1-8=2"]);
+});

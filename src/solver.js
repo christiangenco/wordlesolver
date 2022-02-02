@@ -1,7 +1,7 @@
 // https://www.powerlanguage.co.uk/wordle/
 // const words = require("./words");
 
-export function evaluateGuess({ solution, guess }) {
+function evaluateGuess({ solution, guess }) {
   return [...guess].map((letter, index) => {
     return {
       letter,
@@ -10,9 +10,10 @@ export function evaluateGuess({ solution, guess }) {
     };
   });
 }
-// exports.evaluateGuess = evaluateGuess;
+exports.evaluateGuess = evaluateGuess;
 
-export function filterPossibilities({ words, guessResults }) {
+function filterPossibilities({ words, guessResults }) {
+  const WORD_LENGTH = words[0].length;
   if (guessResults.length === 0) return words;
 
   const includedLetters = [
@@ -34,7 +35,8 @@ export function filterPossibilities({ words, guessResults }) {
   ];
 
   // single-char string if it's known positive, array for a set of known negatives
-  const knownLetters = [[], [], [], [], []];
+  // const knownLetters = [[], [], [], [], []];
+  const knownLetters = [...new Array(WORD_LENGTH)].map(() => []);
   guessResults.forEach((guessResult) => {
     guessResult.forEach(({ letter, included, position }, i) => {
       if (position) {
@@ -47,7 +49,7 @@ export function filterPossibilities({ words, guessResults }) {
       }
     });
   });
-  const regexString = knownLetters
+  let regexString = knownLetters
     .map((letterOrArray) => {
       if (typeof letterOrArray === "object") {
         if (letterOrArray.length === 0) return ".";
@@ -56,24 +58,30 @@ export function filterPossibilities({ words, guessResults }) {
     })
     .join("");
 
+  // escape special characters
+  regexString = regexString.replace(/([*-])/g, "\\$1");
+
   // new RegExp("^b.[^a][^n].$", "i");
   const positionPattern = new RegExp(`^${regexString}$`);
+  console.log({ regexString, knownLetters, positionPattern });
 
   return words
     .filter((w) => positionPattern.test(w))
     .filter((w) => includedLetters.every((l) => w.includes(l)))
     .filter((w) => !notIncluded.some((l) => w.includes(l)));
 }
-// exports.filterPossibilities = filterPossibilities;
+exports.filterPossibilities = filterPossibilities;
 
-export function solve({
-  guessResults,
+exports.solve = function ({
+  guessResults = [],
   words,
   possibilities,
   searchWords = true,
   onProgress,
 }) {
   console.log("solving...");
+
+  // if (!possibilities) possibilities = words;
   // return new Promise((resolve, reject) => {
   // const possibilities = filterPossibilities({ guessResults, words });
 
@@ -85,6 +93,7 @@ export function solve({
 
   // search words instead of possibilities for a longer but more rigorous search
   const searchArray = searchWords ? words : possibilities;
+  // const searchArray = ["0+12/3=4"];
   for (let i = 0; i < searchArray.length; i++) {
     const word = searchArray[i];
     // console.log({ word, minMaxRemainingPossibilities });
@@ -119,6 +128,7 @@ export function solve({
     const maxRemainingPossibilities = Math.max(
       ...potentialRemainingPossibilities
     );
+    console.log({ potentialRemainingPossibilities, maxRemainingPossibilities });
     if (maxRemainingPossibilities <= minMaxRemainingPossibilities) {
       minMaxWord = word;
       minMaxRemainingPossibilities = maxRemainingPossibilities;
@@ -143,7 +153,7 @@ export function solve({
   // resolve(orderedGuesses);
   // console.log(orderedGuesses[0]);
   // });
-}
+};
 // exports.solve = solve;
 
 // const guessResults = [
