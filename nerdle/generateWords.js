@@ -1,4 +1,5 @@
 const MAX_SOLUTION = 99 * 9;
+const MIN_SOLUTION = 1 - 99;
 const WORD_LENGTH = 9;
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
@@ -8,7 +9,7 @@ const letters = [...numbers, ...operators];
 function findValidStarts({ start = [], end, startLength }) {
   if (start.length >= startLength) {
     const word = start.join("") + end;
-    if (eval(word)) console.log(word);
+    if (eval(word)) console.log(word.replace("==", "="));
     return;
   }
 
@@ -16,19 +17,25 @@ function findValidStarts({ start = [], end, startLength }) {
     const letter = letters[i];
     const needsPreviousNumber = i > 8;
     const previousLetter = start.length > 0 && start[start.length - 1];
-    const previousLetterIndex =
-      previousLetter && letters.indexOf(previousLetter);
-    const previousIsNumber = previousLetterIndex && previousLetterIndex <= 8;
+    // const previousLetterIndex =
+    // previousLetter && letters.indexOf(previousLetter);
+    // const previousIsNumber = previousLetterIndex !== -1 && previousLetterIndex <= 8;
+    const previousIsNumber = typeof previousLetter === "number";
 
     const needsSpaceAfter = i > 9;
     const hasSpaceAfter = startLength - start.length > 1;
 
-    // console.log({
-    //   letter,
-    //   needsPreviousNumber,
-    //   previousLetter,
-    //   previousLetterIndex,
-    // });
+    // if (start[0] && start[0] === 1) {
+    //   console.log(start.join(""));
+    //   console.log({
+    //     letter,
+    //     needsPreviousNumber,
+    //     previousLetter,
+    //     previousIsNumber,
+    //   });
+    // }
+    // if (start[0] && start[0] > 1) break;
+
     if (
       (needsPreviousNumber && !previousIsNumber) ||
       (needsSpaceAfter && !hasSpaceAfter)
@@ -37,7 +44,8 @@ function findValidStarts({ start = [], end, startLength }) {
   }
 }
 
-for (let i = 0; i <= MAX_SOLUTION; i++) {
+// for (let i = MIN_SOLUTION; i <= -98; i++) {
+for (let i = MIN_SOLUTION; i <= MAX_SOLUTION; i++) {
   const end = `==${i}`;
   const startLength = WORD_LENGTH - end.length;
 
