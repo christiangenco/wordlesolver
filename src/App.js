@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useImmer } from "use-immer";
 import memoize from "lodash.memoize";
+import { Follow } from "react-twitter-widgets";
 
 import Header from "./Header";
 import Grid from "./Grid";
@@ -152,6 +153,16 @@ function App() {
                 ))}
               </div>
             </div>
+          </div>
+          <div className="mt-16 flex justify-center items-center ">
+            <a href="https://twitter.com/cgenco">
+              <img
+                src="https://christian.gen.co/images/profile.square.small.jpg"
+                alt=""
+                className="rounded-full w-8 h-8 mr-2"
+              />
+            </a>
+            <Follow username="cgenco" />
           </div>
         </div>
       </div>

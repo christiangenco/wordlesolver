@@ -63,7 +63,7 @@ function filterPossibilities({ words, guessResults }) {
 
   // new RegExp("^b.[^a][^n].$", "i");
   const positionPattern = new RegExp(`^${regexString}$`);
-  console.log({ regexString, knownLetters, positionPattern });
+  // console.log({ regexString, knownLetters, positionPattern });
 
   return words
     .filter((w) => positionPattern.test(w))
@@ -128,7 +128,7 @@ exports.solve = function ({
     const maxRemainingPossibilities = Math.max(
       ...potentialRemainingPossibilities
     );
-    console.log({ potentialRemainingPossibilities, maxRemainingPossibilities });
+    // console.log({ potentialRemainingPossibilities, maxRemainingPossibilities });
     if (maxRemainingPossibilities <= minMaxRemainingPossibilities) {
       minMaxWord = word;
       minMaxRemainingPossibilities = maxRemainingPossibilities;
