@@ -1,4 +1,4 @@
-# Wordle Sovler
+# Wordle Solver
 
 Website source code for [WordleSolver.com](https://wordlesolver.com), which solves the daily [Wordle](https://www.powerlanguage.co.uk/wordle/) word puzzles.
 
