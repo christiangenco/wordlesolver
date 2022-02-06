@@ -72,7 +72,7 @@ function filterPossibilities({ words, guessResults }) {
 }
 exports.filterPossibilities = filterPossibilities;
 
-exports.solve = function ({
+function solve({
   guessResults = [],
   words,
   possibilities,
@@ -153,8 +153,8 @@ exports.solve = function ({
   // resolve(orderedGuesses);
   // console.log(orderedGuesses[0]);
   // });
-};
-// exports.solve = solve;
+}
+exports.solve = solve;
 
 // const guessResults = [
 //   [

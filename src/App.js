@@ -9,8 +9,9 @@ import AddGuessForm from "./AddGuessForm";
 
 import words from "./words";
 import solutions from "./solutions";
-import { filterPossibilities, solve } from "./solver";
 import optimalFirstGuesses from "./optimalFirstGuesses";
+// import { filterPossibilities, solve } from "./solver";
+const { filterPossibilities, solve } = require("./solver");
 
 const memoizedSolve = memoize(
   solve,
